@@ -17,38 +17,30 @@ data:
       - url: http://loki:3100/loki/api/v1/push
 
     scrape_configs:
+      # Scrape container logs
       - job_name: kubernetes-pods
         kubernetes_sd_configs:
           - role: pod
         relabel_configs:
-          - source_labels: [__meta_kubernetes_pod_controller_name]
-            regex: .*
-            target_label: __tmp_controller_name
           - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+            action: keep
             regex: php-app
-            target_label: __tmp_php_app
-          - source_labels: [__tmp_php_app]
-            regex: php-app
-            target_label: job
-            replacement: php-app-logs
           - source_labels: [__meta_kubernetes_pod_name]
             target_label: pod
           - source_labels: [__meta_kubernetes_pod_container_name]
             target_label: container
           - source_labels: [__meta_kubernetes_namespace]
             target_label: namespace
+          - replacement: php-app-logs
+            target_label: job
         pipeline_stages:
           - cri: {}
 
-      - job_name: kubernetes-pods-app
-        kubernetes_sd_configs:
-          - role: pod
-        relabel_configs:
-          - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
-            action: keep
-            regex: php-app
-          - source_labels: [__meta_kubernetes_pod_container_port_name]
-            action: keep
-            regex: http
-        pipeline_stages:
-          - cri: {}
+      # Scrape PHP error logs specifically
+      - job_name: php-error-logs
+        static_configs:
+          - targets:
+              - localhost
+            labels:
+              job: php-error-logs
+              __path__: /var/log/php_errors.log
