@@ -1,0 +1,56 @@
+loki:
+  image:
+    repository: grafana/loki
+    tag: "2.9.0"
+  service:
+    port: 3100
+  persistence:
+    enabled: true
+    size: 10Gi
+  config:
+    auth_enabled: false
+    server:
+      http_listen_port: 3100
+    ingester:
+      lifecycler:
+        address: 127.0.0.1
+        ring:
+          kvstore:
+            store: inmemory
+          replication_factor: 1
+    schema_config:
+      configs:
+        - from: 2020-10-24
+          store: boltdb-shipper
+          object_store: filesystem
+          schema: v11
+          index:
+            prefix: index_
+            period: 24h
+
+promtail:
+  image:
+    repository: grafana/promtail
+    tag: "2.9.0"
+  config:
+    server:
+      http_listen_port: 9080
+    positions:
+      filename: /tmp/positions.yaml
+    clients:
+      - url: http://loki:3100/loki/api/v1/push
+    scrape_configs:
+      - job_name: kubernetes-pods
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_controller_name]
+            regex: .*
+            target_label: __tmp_controller_name
+          - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+            regex: php-app
+            target_label: __tmp_php_app
+          - source_labels: [__tmp_php_app]
+            regex: php-app
+            target_label: job
+            replacement: php-app-logs
