@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "php-app.fullname" . }}-content
+  labels:
+    {{- include "php-app.labels" . | nindent 4 }}
+data:
+  index.php: |
+    <?php
+    function randomError() {
+        $chance = rand(1, 5);
+        if ($chance === 1) {
+            $errorMessages = [
+                "Error: File not found!",
+                "Error: Invalid input detected!",
+                "Error: Permission denied!",
+                "Error: Database connection failed!",
+                "Error: Out of memory!"
+            ];
+            
+            $error = $errorMessages[array_rand($errorMessages)];
+            file_put_contents('/var/log/php_errors.log', "Random error occurred: " . $error . PHP_EOL, FILE_APPEND);
+        } else {
+            file_put_contents('/var/log/php_errors.log', "No error this time. Everything is running smoothly!" . PHP_EOL, FILE_APPEND);
+        }
+    }
+    
+    echo "<h1>Branko test text!</h1>";
+    echo "<p>Current time: " . date('Y-m-d H:i:s') . "</p>";
+    echo "<p>Server: " . $_SERVER['SERVER_NAME'] . "</p>";
+    
+    randomError();
+    ?>
