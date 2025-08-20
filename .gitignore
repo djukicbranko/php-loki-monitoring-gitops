@@ -1,0 +1,19 @@
+﻿# Kubernetes
+*.log
+.kube/
+
+# Helm
+charts/*/charts/
+charts/*/.helmignore
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp

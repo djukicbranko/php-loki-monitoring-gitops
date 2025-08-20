@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "php-app.fullname" . }}
+  labels:
+    {{- include "php-app.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "php-app.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "php-app.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: php-content
+              mountPath: /var/www/html
+            - name: php-logs
+              mountPath: /var/log
+          env:
+            - name: APACHE_RUN_USER
+              value: "www-data"
+            - name: APACHE_RUN_GROUP
+              value: "www-data"
+      volumes:
+        - name: php-content
+          configMap:
+            name: {{ include "php-app.fullname" . }}-content
+        - name: php-logs
+          emptyDir: {}
