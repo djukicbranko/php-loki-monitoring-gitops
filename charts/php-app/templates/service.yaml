@@ -1,5 +1,3 @@
-# Create service.yaml
-@"
 apiVersion: v1
 kind: Service
 metadata:
@@ -15,4 +13,3 @@ spec:
       name: http
   selector:
     {{- include "php-app.selectorLabels" . | nindent 4 }}
-"@ | Out-File -FilePath "charts\\php-app\\templates\\service.yaml" -Encoding UTF8
