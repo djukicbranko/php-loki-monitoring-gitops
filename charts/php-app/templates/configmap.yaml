@@ -19,9 +19,9 @@ data:
             ];
             
             $error = $errorMessages[array_rand($errorMessages)];
-            error_log("Random error occurred: " . $error);
+            file_put_contents('php://stderr', "Random error occurred: " . $error . PHP_EOL);
         } else {
-            error_log("No error this time. Everything is running smoothly!");
+            file_put_contents('php://stderr', "No error this time. Everything is running smoothly!" . PHP_EOL);
         }
     }
     
