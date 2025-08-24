@@ -16,20 +16,22 @@ spec:
     spec:
       containers:
         - name: grafana
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: grafana/grafana:10.0.0
           ports:
             - containerPort: 3000
-              name: http
           env:
             - name: GF_SECURITY_ADMIN_USER
-              value: "{{ .Values.adminUser }}"
+              value: admin
             - name: GF_SECURITY_ADMIN_PASSWORD
-              value: "{{ .Values.adminPassword }}"
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+              value: admin
           volumeMounts:
             - name: grafana-storage
               mountPath: /var/lib/grafana
+            - name: datasources
+              mountPath: /etc/grafana/provisioning/datasources
       volumes:
         - name: grafana-storage
           emptyDir: {}
+        - name: datasources
+          configMap:
+            name: grafana-datasources
