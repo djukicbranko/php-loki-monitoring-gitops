@@ -7,6 +7,12 @@ metadata:
 data:
   index.php: |
     <?php
+    // Log to stdout so it appears in container logs
+    function logMessage($message) {
+        echo "[" . date('Y-m-d H:i:s') . "] " . $message . "\n";
+        flush();
+    }
+    
     function randomError() {
         $chance = rand(1, 5);
         if ($chance === 1) {
@@ -19,15 +25,21 @@ data:
             ];
             
             $error = $errorMessages[array_rand($errorMessages)];
-            error_log("Random error occurred: " . $error, 4);
+            logMessage("RANDOM_ERROR: " . $error);
         } else {
-            error_log("No error this time. Everything is running smoothly!", 4);
+            logMessage("SUCCESS: No error this time. Everything is running smoothly!");
         }
     }
     
+    // Log page request
+    logMessage("PAGE_REQUEST: User accessed index.php from " . $_SERVER['REMOTE_ADDR']);
+    
     echo "<h1>Hello World!</h1>";
     echo "<p>Current time: " . date('Y-m-d H:i:s') . "</p>";
-    echo "<p>Server: " . $_SERVER['SERVER_NAME'] . "</p>";
+    echo "<p>Server: " . ($_SERVER['SERVER_NAME'] ?? 'localhost') . "</p>";
     
     randomError();
+    
+    // Log completion
+    logMessage("PAGE_COMPLETE: Request processing finished");
     ?>
