@@ -25,7 +25,7 @@ data:
         }
     }
     
-    echo "<h1>Branko test text!</h1>";
+    echo "<h1>Fianl update!</h1>";
     echo "<p>Current time: " . date('Y-m-d H:i:s') . "</p>";
     echo "<p>Server: " . $_SERVER['SERVER_NAME'] . "</p>";
     
