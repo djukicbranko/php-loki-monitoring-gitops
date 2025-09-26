@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: promtail-config
+  name: loki-config
   labels:
     app: promtail
 data:
