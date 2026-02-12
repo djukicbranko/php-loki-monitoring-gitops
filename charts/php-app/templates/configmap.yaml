@@ -9,7 +9,7 @@ data:
     <?php
     // Log to stdout so it appears in container logs
     function logMessage($message) {
-        echo "[" . date('Y-m-d H:i:s') . "] " . $message . "\n";
+        file_put_contents('php://stdout',         "[" . date('Y-m-d H:i:s') . "] " . $message . PHP_EOL    );
         flush();
     }
     
