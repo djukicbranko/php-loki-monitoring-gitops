@@ -13,15 +13,16 @@ data:
         flush();
     }
     
-    function randomError() {
-        $chance = rand(1, 5);
-        if ($chance === 1) {
-            $errorMessages = [
-                "Error: File not found!",
-                "Error: Invalid input detected!",
-                "Error: Permission denied!",
-                "Error: Database connection failed!",
-                "Error: Out of memory!"
+    function logMessage($message) {
+
+    file_put_contents('php://stdout', 
+
+        "[" . date('Y-m-d H:i:s') . "] " . $message . PHP_EOL
+
+    );
+
+}
+ 
             ];
             
             $error = $errorMessages[array_rand($errorMessages)];
